@@ -49,6 +49,34 @@ def gen_hist(path_output, dataloader, batch_size, itr, phase=None):
     # ヒストグラム
     plt.hist(list_ratio, bins=50)
     plt.title('{}'.format(phase))
+    plt.xlabel('class_1 ratio [%]')
+    plt.ylabel('frequency')
     plt.savefig(os.path.join(path_output, 'hist_{}.png'.format(phase)))
     plt.close()
     plt.clf()
+
+def transition_data_use(path_output, dataloader, list_all_path, phase=None):
+    count_all = len(list_all_path)
+    list_count = list_all_path
+    list_log = []
+    iteration = 0
+    while list_count != []:
+        for path, _ in dataloader:
+            if list_count == []:
+                break
+            for path_indiv in list(path):
+                if path_indiv in list_count:
+                    list_count.remove(path_indiv)
+            list_seed = [iteration, count_all - len(list_count)]
+            # print(len(list_count))
+            list_log.append(list_seed)
+            iteration += 1
+    x_array, y_array = np.array(list_log).T
+    plt.plot(x_array, y_array)
+    plt.title('{}'.format(phase))
+    plt.xlabel('iteration')
+    plt.ylabel('file_use')
+    plt.savefig(os.path.join(path_output, 'log_{}.png'.format(phase)))
+    plt.close()
+    plt.clf()
+    return list_log

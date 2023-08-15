@@ -12,7 +12,7 @@ class MyDataset_path(data.Dataset):
 
     def __getitem__(self, index):
         # 画像のパスを取得
-        path_image = os.path.join(self.path_input, self.list_file[index][0])
+        path_image = self.list_file[index][0]
 
         # ラベルを取得
         label_class = self.list_file[index][1]

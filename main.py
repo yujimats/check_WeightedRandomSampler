@@ -1,21 +1,18 @@
 import os
 import numpy as np
-# import time
-# from tqdm import tqdm
-# from sklearn.model_selection import train_test_split
-# from sklearn.metrics import accuracy_score, precision_score, recall_score
+import pandas as pd
+import matplotlib.pyplot as plt
 
 import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.utils.data as data
 from torch.utils.data import WeightedRandomSampler
-import torchvision.models as models
 
 from utils import MyDataset_path
 from fix_seed import fix_seed
 from get_files import get_files_list_toyota_cars
-from view_info import gen_hist, gen_bar
+from view_info import gen_hist, gen_bar, transition_data_use
 
 def main():
     random_seed = 1234
@@ -71,8 +68,59 @@ def main():
     ## itrまでのlabel_1の割合をヒストグラムで表示
     gen_hist(path_output=path_output, dataloader=dataloader_WRS, batch_size=batch_size, itr=itr, phase='WeightedRandomSampler')
 
+    # サンプリング回数を調査
+    df_files = pd.DataFrame(list_files, columns=['path', 'label', 'class'])
+    list_all_path = df_files['path'].to_list()
+    list_label0_path = df_files[df_files['label']==0]['path'].to_list()
+    list_label1_path = df_files[df_files['label']==1]['path'].to_list()
 
+    # 通常の場合
+    _ = transition_data_use(path_output=path_output, dataloader=dataloader, list_all_path=list_all_path, phase='normal_alldata')
+    list_log_label0 = transition_data_use(path_output=path_output, dataloader=dataloader, list_all_path=list_label0_path, phase='normal_alldata_label0')
+    list_log_label1 = transition_data_use(path_output=path_output, dataloader=dataloader, list_all_path=list_label1_path, phase='normal_alldata_label1')
 
+    # 重ねて表示
+    x_array_label0, y_array_label0 = np.array(list_log_label0).T
+    x_array_label1, y_array_label1 = np.array(list_log_label1).T
+    # 規格化
+    y_array_label0 = y_array_label0 / np.max(y_array_label0) * 100
+    y_array_label1 = y_array_label1 / np.max(y_array_label1) * 100
+    # 描画
+    p0 = plt.plot(x_array_label0, y_array_label0)
+    p1 = plt.plot(x_array_label1, y_array_label1)
+    plt.legend((p1[0], p0[0]), ('class 1', 'class 0'))
+    plt.title('normal_label0&1')
+    plt.xlabel('iteration')
+    plt.ylabel('file_use ratio [%]')
+    plt.savefig(os.path.join(path_output, 'log_normal_label0&1.png'))
+    plt.close()
+    plt.clf()
+
+    # WRS適応後
+    list_log_all = transition_data_use(path_output=path_output, dataloader=dataloader_WRS, list_all_path=list_all_path, phase='WRS_alldata')
+    list_log_label0 = transition_data_use(path_output=path_output, dataloader=dataloader_WRS, list_all_path=list_label0_path, phase='WRS_alldata_label0')
+    list_log_label1 = transition_data_use(path_output=path_output, dataloader=dataloader_WRS, list_all_path=list_label1_path, phase='WRS_alldata_label1')
+
+    print(list_log_all[-1])
+    print(list_log_label0[-1])
+    print(list_log_label1[-1])
+
+    # 重ねて表示
+    x_array_label0, y_array_label0 = np.array(list_log_label0).T
+    x_array_label1, y_array_label1 = np.array(list_log_label1).T
+    # 規格化
+    y_array_label0 = y_array_label0 / np.max(y_array_label0) * 100
+    y_array_label1 = y_array_label1 / np.max(y_array_label1) * 100
+    # 描画
+    p0 = plt.plot(x_array_label0, y_array_label0)
+    p1 = plt.plot(x_array_label1, y_array_label1)
+    plt.legend((p1[0], p0[0]), ('class 1', 'class 0'))
+    plt.title('WRS_label0&1')
+    plt.xlabel('iteration')
+    plt.ylabel('file_use ratio [%]')
+    plt.savefig(os.path.join(path_output, 'log_WRS_label0&1.png'))
+    plt.close()
+    plt.clf()
 
 if __name__=='__main__':
     main()
