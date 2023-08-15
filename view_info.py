@@ -30,6 +30,8 @@ def gen_bar(path_output, dataloader, batch_size, itr, phase=None):
     plt.xlabel('iteration')
     plt.ylabel('label count')
     plt.savefig(os.path.join(path_output, 'bar_{}.png'.format(phase)))
+    plt.close()
+    plt.clf()
     return np.sum(hight_1)
 
 def gen_hist(path_output, dataloader, batch_size, itr, phase=None):
@@ -48,3 +50,5 @@ def gen_hist(path_output, dataloader, batch_size, itr, phase=None):
     plt.hist(list_ratio, bins=50)
     plt.title('{}'.format(phase))
     plt.savefig(os.path.join(path_output, 'hist_{}.png'.format(phase)))
+    plt.close()
+    plt.clf()

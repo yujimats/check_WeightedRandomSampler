@@ -20,4 +20,4 @@ def get_files_list_toyota_cars(path_input, label_0=None, label_1=None):
             label = 1
             for filename in val:
                 list_file.append([os.path.join(path_label_1, filename), label, key])
-    return list_file
+    return list_file, len(dict_list_filenames[label_0]), len(dict_list_filenames[label_1])
