@@ -22,7 +22,7 @@ def main():
     path_output = os.path.join('output')
     label_0 = 'camry'
     label_1 = 'crown'
-    batch_size = 16
+    batch_size = 32
     itr = 1000
 
     list_files = get_files_list_toyota_cars(path_input=path_input, label_0=label_0, label_1=label_1)
@@ -38,12 +38,14 @@ def main():
     print(labels)
 
     ## バッチごとのクラス数を棒グラフで表示
-    gen_bar(path_output=path_output, dataloader=dataloader, batch_size=batch_size, itr=10, phase='normal')
+    label1_count = gen_bar(path_output=path_output, dataloader=dataloader, batch_size=batch_size, itr=10, phase='normal')
+    print(label1_count) # ラベル
 
     ## itrまでのlabel_1の割合をヒストグラムで表示
     gen_hist(path_output=path_output, dataloader=dataloader, batch_size=batch_size, itr=itr, phase='normal')
 
-    # WeightedRamdomSamplerを適用
+    # WeightedRandomSamplerを適用
+    
 
 
 if __name__=='__main__':

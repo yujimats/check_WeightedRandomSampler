@@ -30,6 +30,7 @@ def gen_bar(path_output, dataloader, batch_size, itr, phase=None):
     plt.xlabel('iteration')
     plt.ylabel('label count')
     plt.savefig(os.path.join(path_output, 'bar_{}.png'.format(phase)))
+    return np.sum(hight_1)
 
 def gen_hist(path_output, dataloader, batch_size, itr, phase=None):
     # itrまでのlabel_1の割合を求める
